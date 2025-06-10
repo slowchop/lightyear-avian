@@ -1,0 +1,26 @@
+[
+  {
+    "label": "HostServer",
+    "command": "cargo run h",
+    "reveal": "always",
+    "reveal_target": "dock",
+    "hide": "never",
+    "shell": "system"
+  },
+  {
+    "label": "Server",
+    "command": "cargo run s",
+    "reveal": "always",
+    "reveal_target": "dock",
+    "hide": "never",
+    "shell": "system"
+  },
+  {
+    "label": "Client",
+    "command": "cargo run c",
+    "reveal": "always",
+    "reveal_target": "dock",
+    "hide": "never",
+    "shell": "system"
+  }
+]
