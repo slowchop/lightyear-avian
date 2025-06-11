@@ -1,4 +1,8 @@
+use crate::Ship;
 use crate::shared::shared_config;
+use avian2d::prelude::{ColliderDisabled, RigidBody, RigidBodyDisabled};
+use bevy::color::palettes::css::DARK_SLATE_GREY;
+use bevy::color::palettes::tailwind::ORANGE_500;
 use bevy::prelude::*;
 use lightyear::connection::netcode::PRIVATE_KEY_BYTES;
 use lightyear::prelude::client::*;
@@ -27,4 +31,45 @@ pub(crate) fn lightyear_client_plugin(app: &mut App) {
         ..default()
     };
     app.add_plugins(ClientPlugins::new(config));
+    app.add_systems(Update, disable_physics_on_replicated_entities);
+}
+
+pub(crate) fn insert_ship_visuals(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    query: Query<(Entity, Has<Replicated>), (With<Ship>, Without<Mesh2d>)>,
+) {
+    for (entity, has_replicated) in &query {
+        let color = if has_replicated {
+            Color::from(DARK_SLATE_GREY).with_alpha(0.1)
+        } else {
+            Color::from(ORANGE_500).with_alpha(0.5)
+        };
+        commands.entity(entity).insert((
+            Mesh2d(meshes.add(Rectangle::new(0.5, 1.0))),
+            MeshMaterial2d(materials.add(color)),
+        ));
+    }
+}
+
+/// Disable physics on predicted entities to prevent rollback conflicts
+/// Physics should only run on confirmed (interpolated) entities from the server
+pub(crate) fn disable_physics_on_replicated_entities(
+    mut commands: Commands,
+    predicted_entities: Query<
+        Entity,
+        (
+            With<Replicated>,
+            With<RigidBody>,
+            Without<RigidBodyDisabled>,
+        ),
+    >,
+) {
+    for entity in &predicted_entities {
+        commands
+            .entity(entity)
+            .insert(RigidBodyDisabled)
+            .insert(ColliderDisabled);
+    }
 }

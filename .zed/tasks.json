@@ -2,6 +2,9 @@
   {
     "label": "HostServer",
     "command": "cargo run h",
+    "env": {
+      "RUST_LOG": "info,lightyear=debug"
+    },
     "reveal": "always",
     "reveal_target": "dock",
     "hide": "never",
@@ -10,6 +13,9 @@
   {
     "label": "Server",
     "command": "cargo run s",
+    "env": {
+      "RUST_LOG": "info,lightyear=debug"
+    },
     "reveal": "always",
     "reveal_target": "dock",
     "hide": "never",
@@ -18,6 +24,9 @@
   {
     "label": "Client",
     "command": "cargo run c",
+    "env": {
+      "RUST_LOG": "info,lightyear=debug"
+    },
     "reveal": "always",
     "reveal_target": "dock",
     "hide": "never",

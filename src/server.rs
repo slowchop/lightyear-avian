@@ -68,14 +68,14 @@ pub(crate) fn spawn_multiplayer_scene(
     */
     let ship_entity = commands
         .spawn((
-            Name::new("Ship---!"),
+            Name::new("Ship"),
             Ship,
             replicate.clone(),
             RigidBody::Dynamic,
             Transform::from_translation(Vec3::new(-2.0, 0., 0.)),
             SetCollider::Rectangle(0.5, 1.0),
-            AngularVelocity(1.1),
-            LinearVelocity(Vec2::X * 0.1),
+            // AngularVelocity(1.1),
+            LinearVelocity(Vec2::X * 1.0),
             Mesh2d(meshes.add(Rectangle::new(0.5, 1.0))),
             MeshMaterial2d(materials.add(Color::from(ORANGE_500).with_alpha(0.5))),
         ))
@@ -104,27 +104,27 @@ pub(crate) fn handle_connections(
             ..default()
         };
 
-        let network_player_entity = commands
-            .spawn((
-                Name::new("Network PlayerId"),
-                PlayerId(client_id),
-                replicate.clone(),
-            ))
-            .id();
-        info!(
-            "Create entity {:?} for client {:?}",
-            network_player_entity, client_id
-        );
+        // let network_player_entity = commands
+        //     .spawn((
+        //         Name::new("Network PlayerId"),
+        //         PlayerId(client_id),
+        //         replicate.clone(),
+        //     ))
+        //     .id();
+        // info!(
+        //     "Create entity {:?} for client {:?}",
+        //     network_player_entity, client_id
+        // );
         // boss_state.insert(client_id, network_player_entity);
 
-        let astro = commands
-            .spawn((
-                Name::new("Player Owned Astro"),
-                Astro,
-                replicate.clone(),
-                // RelationshipSync::<ChildOf>::from(Some(*test_ship)),
-            ))
-            .id();
+        // let astro = commands
+        //     .spawn((
+        //         Name::new("Player Owned Astro"),
+        //         Astro,
+        //         replicate.clone(),
+        //         // RelationshipSync::<ChildOf>::from(Some(*test_ship)),
+        //     ))
+        //     .id();
 
         // commands
         //     .entity(network_player_entity)

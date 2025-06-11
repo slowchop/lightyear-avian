@@ -1,7 +1,4 @@
-use avian2d::prelude::{
-    AngularVelocity, ColliderDisabled, LinearVelocity, Position, RigidBody, RigidBodyDisabled,
-    Rotation,
-};
+use avian2d::prelude::{AngularVelocity, LinearVelocity, RigidBody};
 use bevy::ecs::component::Component;
 use bevy::prelude::*;
 use lightyear::{
@@ -10,12 +7,12 @@ use lightyear::{
         *,
     },
     utils::{
-        avian2d::{angular_velocity, linear_velocity, position, rotation},
+        avian2d::{angular_velocity, linear_velocity},
         bevy::TransformLinearInterpolation,
     },
 };
 
-use crate::Ship;
+use crate::{Ship, shared::SetCollider};
 
 // #[derive(Channel)]
 // pub(crate) struct ReliableChannel;
@@ -45,49 +42,34 @@ pub(super) fn plugin(app: &mut App) {
         .add_prediction(ComponentSyncMode::Once)
         .add_interpolation(ComponentSyncMode::Once);
 
-    app.register_component::<PlayerId>(ChannelDirection::Bidirectional)
-        .add_prediction(ComponentSyncMode::Once)
-        .add_interpolation(ComponentSyncMode::Once);
+    // app.register_component::<PlayerId>(ChannelDirection::ServerToClient)
+    //     .add_prediction(ComponentSyncMode::Once)
+    //     .add_interpolation(ComponentSyncMode::Once);
 
     app.register_component::<RigidBody>(ChannelDirection::ServerToClient)
         .add_prediction(ComponentSyncMode::Full);
 
-    // Position and Rotation have a `correction_fn` set, which is used to smear rollback errors
-    // over a few frames, just for the rendering part in postudpate.
-    //
-    // They also set `interpolation_fn` which is used by the VisualInterpolationPlugin to smooth
-    // out rendering between fixedupdate ticks.
-    // app.register_component::<Position>(ChannelDirection::ServerToClient)
-    //     .add_prediction(ComponentSyncMode::Full)
-    //     .add_interpolation(ComponentSyncMode::Full)
-    //     .add_interpolation_fn(position::lerp)
-    //     .add_correction_fn(position::lerp);
+    app.register_component::<SetCollider>(ChannelDirection::ServerToClient)
+        .add_prediction(ComponentSyncMode::Full);
+
     app.register_component::<LinearVelocity>(ChannelDirection::ServerToClient)
         .add_prediction(ComponentSyncMode::Full)
-        .add_interpolation(ComponentSyncMode::Full)
-        .add_interpolation_fn(linear_velocity::lerp)
-        .add_correction_fn(linear_velocity::lerp);
+        // .add_interpolation(ComponentSyncMode::Full)
+        // .add_interpolation_fn(linear_velocity::lerp)
+        // .add_correction_fn(linear_velocity::lerp);
+        ;
 
-    // app.register_component::<Rotation>(ChannelDirection::ServerToClient)
-    //     .add_prediction(ComponentSyncMode::Full)
-    //     .add_interpolation(ComponentSyncMode::Full)
-    //     .add_interpolation_fn(rotation::lerp)
-    //     .add_correction_fn(rotation::lerp);
     app.register_component::<AngularVelocity>(ChannelDirection::ServerToClient)
         .add_prediction(ComponentSyncMode::Full)
-        .add_interpolation(ComponentSyncMode::Full)
-        .add_interpolation_fn(angular_velocity::lerp)
-        .add_correction_fn(angular_velocity::lerp);
+        // .add_interpolation(ComponentSyncMode::Full)
+        // .add_interpolation_fn(angular_velocity::lerp)
+        // .add_correction_fn(angular_velocity::lerp);
+        ;
 
     app.register_component::<Transform>(ChannelDirection::ServerToClient)
         .add_prediction(ComponentSyncMode::Full)
-        .add_interpolation(ComponentSyncMode::Full)
-        .add_interpolation_fn(TransformLinearInterpolation::lerp)
-        .add_correction_fn(TransformLinearInterpolation::lerp);
-
-    // do not replicate Transform but make sure to register an interpolation function
-    // for it so that we can do visual interpolation
-    // (another option would be to replicate transform and not use Position/Rotation at all)
-    // app.add_interpolation::<Transform>(ComponentSyncMode::None);
-    // app.add_interpolation_fn::<Transform>(TransformLinearInterpolation::lerp);
+        // .add_interpolation(ComponentSyncMode::Full)
+        // .add_interpolation_fn(TransformLinearInterpolation::lerp)
+        // .add_correction_fn(TransformLinearInterpolation::lerp);
+        ;
 }

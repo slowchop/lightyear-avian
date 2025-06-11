@@ -16,6 +16,7 @@ serde = { version = "1.0.209", features = ["derive"] }
 leafwing-input-manager = { version = "0.17", features = ["ui"] }
 bevy_egui = { version = "*" }
 bevy-inspector-egui = { version = "*" }
+bevy_framepace = "*"
 
 [lints.clippy]
 too_many_arguments = "allow"
