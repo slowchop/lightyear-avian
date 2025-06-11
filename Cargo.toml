@@ -3,6 +3,9 @@ name = "lightyear-avian"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = ["bevy/dynamic_linking"]
+
 [dependencies]
 bevy = "0.16"
 log = { version = "0.4", features = [] }
@@ -11,13 +14,16 @@ avian2d = { version = "0.3", features = ["serialize"] }
 lightyear = { version = "0.20.2", features = ["udp", "leafwing", "avian2d"] }
 serde = { version = "1.0.209", features = ["derive"] }
 leafwing-input-manager = { version = "0.17", features = ["ui"] }
+bevy_egui = { version = "*" }
+bevy-inspector-egui = { version = "*" }
 
 [lints.clippy]
 too_many_arguments = "allow"
 type_complexity = "allow"
 
 [profile.dev]
-opt-level = 1
+opt-level = 0
+strip = true
 
 [profile.dev.package."*"]
 opt-level = 3

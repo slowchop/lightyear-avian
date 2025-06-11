@@ -54,3 +54,11 @@ pub(crate) fn on_set_collider(
         }
     }
 }
+
+#[derive(Component, Reflect, Debug, Default, Serialize, Deserialize, Eq, PartialEq, Clone)]
+#[reflect(Component, Default)]
+pub(crate) struct Ship;
+
+#[derive(Component, Reflect, Debug, Default, Serialize, Deserialize, Eq, PartialEq, Clone)]
+#[reflect(Component, Default)]
+pub(crate) struct Astro;

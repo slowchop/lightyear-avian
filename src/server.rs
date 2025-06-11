@@ -1,11 +1,11 @@
-use avian2d::prelude::RigidBody;
-use bevy::prelude::*;
+use avian2d::prelude::{AngularVelocity, LinearVelocity, RigidBody};
+use bevy::{color::palettes::tailwind::ORANGE_500, prelude::*};
 use lightyear::prelude::server::*;
 use lightyear::prelude::*;
 
 use crate::{
     protocol::PlayerId,
-    shared::{SetCollider, shared_config},
+    shared::{Astro, SetCollider, Ship, shared_config},
 };
 
 pub(crate) fn lightyear_server_plugin() -> ServerPlugins {
@@ -40,7 +40,11 @@ pub(crate) fn start_dedicated_server(
     commands.start_server();
 }
 
-pub(crate) fn spawn_multiplayer_scene(mut commands: Commands) {
+pub(crate) fn spawn_multiplayer_scene(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
     let replicate = Replicate {
         sync: SyncTarget {
             prediction: NetworkTarget::All,
@@ -50,13 +54,30 @@ pub(crate) fn spawn_multiplayer_scene(mut commands: Commands) {
         ..default()
     };
 
+    /*
+    commands.spawn((
+                Mesh2d(shape),
+                MeshMaterial2d(materials.add(color)),
+                Transform::from_xyz(
+                    // Distribute shapes from -X_EXTENT/2 to +X_EXTENT/2.
+                    -X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
+                    0.0,
+                    0.0,
+                ),
+            ));
+    */
     let ship_entity = commands
         .spawn((
+            Name::new("Ship---!"),
+            Ship,
             replicate.clone(),
             RigidBody::Dynamic,
+            Transform::from_translation(Vec3::new(-2.0, 0., 0.)),
             SetCollider::Rectangle(0.5, 1.0),
-            // AngularVelocity(10.1),
-            // LinearVelocity(Vec2::X * 10.0),
+            AngularVelocity(1.1),
+            LinearVelocity(Vec2::X * 0.1),
+            Mesh2d(meshes.add(Rectangle::new(0.5, 1.0))),
+            MeshMaterial2d(materials.add(Color::from(ORANGE_500).with_alpha(0.5))),
         ))
         .id();
 }
@@ -99,6 +120,7 @@ pub(crate) fn handle_connections(
         let astro = commands
             .spawn((
                 Name::new("Player Owned Astro"),
+                Astro,
                 replicate.clone(),
                 // RelationshipSync::<ChildOf>::from(Some(*test_ship)),
             ))

@@ -15,6 +15,8 @@ use lightyear::{
     },
 };
 
+use crate::Ship;
+
 // #[derive(Channel)]
 // pub(crate) struct ReliableChannel;
 
@@ -35,6 +37,13 @@ pub(super) fn plugin(app: &mut App) {
     //     mode: ChannelMode::OrderedReliable(ReliableSettings::default()),
     //     ..default()
     // });
+
+    app.register_component::<Name>(ChannelDirection::ServerToClient)
+        .add_prediction(ComponentSyncMode::Once)
+        .add_interpolation(ComponentSyncMode::Once);
+    app.register_component::<Ship>(ChannelDirection::ServerToClient)
+        .add_prediction(ComponentSyncMode::Once)
+        .add_interpolation(ComponentSyncMode::Once);
 
     app.register_component::<PlayerId>(ChannelDirection::Bidirectional)
         .add_prediction(ComponentSyncMode::Once)
