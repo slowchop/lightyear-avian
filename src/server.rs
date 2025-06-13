@@ -46,9 +46,12 @@ pub(crate) fn spawn_multiplayer_scene(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let replicate = Replicate {
+        // target defaults to NetworkTarget::All--just being verbose here..
+        target: ReplicateToClient {
+            target: NetworkTarget::All,
+        },
         sync: SyncTarget {
             prediction: NetworkTarget::All,
-            // interpolation: NetworkTarget::All,
             ..default()
         },
         ..default()
@@ -72,7 +75,7 @@ pub(crate) fn spawn_multiplayer_scene(
             Ship,
             replicate.clone(),
             RigidBody::Dynamic,
-            Transform::from_translation(Vec3::new(-2.0, 0., 0.)),
+            Transform::from_translation(Vec3::new(0.0, 0., 0.)),
             SetCollider::Rectangle(0.5, 1.0),
             // AngularVelocity(1.1),
             LinearVelocity(Vec2::X * 1.0),

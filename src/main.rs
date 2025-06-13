@@ -13,7 +13,7 @@ use bevy_framepace::{FramepaceSettings, Limiter};
 use bevy_inspector_egui::quick::{FilterQueryInspectorPlugin, WorldInspectorPlugin};
 use client::{insert_ship_visuals, lightyear_client_plugin};
 use lightyear::prelude::{
-    client::{ClientCommandsExt, Confirmed, Interpolated, Predicted, Rollback},
+    client::{ClientCommandsExt, Confirmed, Interpolated, Predicted, Rollback, RollbackState},
     server::ReplicateToClient,
     *,
 };
@@ -22,6 +22,7 @@ use server::{
     handle_connections, lightyear_server_plugin, spawn_multiplayer_scene, start_dedicated_server,
 };
 use shared::{Ship, on_set_collider};
+use tracing::instrument;
 
 enum NetMode {
     HostClient,
@@ -49,10 +50,10 @@ fn main() -> AppExit {
     let mut app = App::new();
     app.add_plugins(DefaultPlugins);
 
-    // app.insert_resource(FramepaceSettings {
-    //     limiter: Limiter::from_framerate(64.0),
-    // });
-    // app.add_plugins(bevy_framepace::FramepacePlugin);
+    app.insert_resource(FramepaceSettings {
+        limiter: Limiter::from_framerate(100.0),
+    });
+    app.add_plugins(bevy_framepace::FramepacePlugin);
 
     app.add_plugins(bevy_egui::EguiPlugin {
         enable_multipass_for_primary_context: false,
@@ -64,7 +65,7 @@ fn main() -> AppExit {
     )>::default());
     // app.add_plugins(FilterQueryInspectorPlugin::<With<Ship>>::default());
 
-    app.add_plugins(PhysicsPlugins::default());
+    app.add_plugins(PhysicsPlugins::new(FixedMain));
     app.insert_resource(Gravity(Vec2::ZERO));
 
     match net_mode {
@@ -144,27 +145,27 @@ fn on_entity_network_type_change_name<T: Component>(
     }
 }
 
+#[instrument(skip_all)]
 pub(crate) fn after_physics_log(
     tick_manager: Res<TickManager>,
     rollback: Option<Res<Rollback>>,
     ships_predicted: Query<&Transform, (With<Ship>, With<Predicted>)>,
     ships_confirmed: Query<&Transform, (With<Ship>, With<Confirmed>)>,
 ) {
+    info!(
+        current_tick = ?tick_manager.tick(),
+        "> FixedPostUpdate after_physics_log"
+    );
     let is_rollback = rollback.is_some();
 
     let tick = rollback.map_or(tick_manager.tick(), |r| {
         let state = r.as_ref();
-        let state = state.state.read();
-        info!("Rollback state: {:?}", state);
+        if state.is_rollback() {
+            let state = state.state.read();
+            warn!("!!! Rollback state: {:?}", state);
+        }
         tick_manager.tick_or_rollback_tick(r.as_ref())
     });
-    info!(?tick, "> FixedPostUpdate after_physics_log");
-
-    if is_rollback {
-        info!("<<<<<<<<<<<<<<< ROLLBACK");
-    } else {
-        info!("<<<<<<<<<<<<<<<< OK NO RB");
-    }
 
     for transform in &ships_predicted {
         info!(?tick, ?transform, "predicted");
@@ -174,6 +175,7 @@ pub(crate) fn after_physics_log(
     }
 }
 
+#[instrument(skip_all)]
 pub(crate) fn last_log(
     tick_manager: Res<TickManager>,
     ships: Query<&Transform, (With<Ship>, Without<Confirmed>)>,
@@ -185,6 +187,7 @@ pub(crate) fn last_log(
     }
 }
 
+#[instrument(skip_all)]
 pub(crate) fn log() {
     info!(">>>>>>>>>>>>>>>>>>>>> PhysicsSchedule PhysicsStepSet::First");
 }

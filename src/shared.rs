@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use lightyear::prelude::{client::Predicted, server::ReplicateToClient, *};
 use std::time::Duration;
 
-pub(crate) const FIXED_TIMESTEP_HZ: f64 = 64.0; // 64Hz is bevy's default fixed timestamp.
+pub(crate) const FIXED_TIMESTEP_HZ: f64 = 10.0; // 64Hz is bevy's default fixed timestamp.
 pub(crate) const FIXED_TIMESTEP_DURATION: Duration = Duration::from_millis(100);
 
 pub(crate) fn shared_config() -> SharedConfig {

@@ -14,7 +14,7 @@
     "label": "Server",
     "command": "cargo run s",
     "env": {
-      "RUST_LOG": "info,lightyear=debug"
+      "RUST_LOG": "info,lightyear=trace"
     },
     "reveal": "always",
     "reveal_target": "dock",
@@ -25,7 +25,7 @@
     "label": "Client",
     "command": "cargo run c",
     "env": {
-      "RUST_LOG": "info,lightyear=debug"
+      "RUST_LOG": "info,lightyear=trace"
     },
     "reveal": "always",
     "reveal_target": "dock",

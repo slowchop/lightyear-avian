@@ -28,10 +28,15 @@ pub(crate) fn lightyear_client_plugin(app: &mut App) {
         },
         // Look at the connect code to change these.
         prediction: PredictionConfig::no_input_delay(),
+        sync: SyncConfig {
+            error_margin: 10.0,
+            max_error_margin: 1000.0,
+            ..default()
+        },
         ..default()
     };
     app.add_plugins(ClientPlugins::new(config));
-    app.add_systems(Update, disable_physics_on_replicated_entities);
+    app.add_systems(Update, disable_physics_on_confirmed_entities);
 }
 
 pub(crate) fn insert_ship_visuals(
@@ -53,20 +58,16 @@ pub(crate) fn insert_ship_visuals(
     }
 }
 
-/// Disable physics on predicted entities to prevent rollback conflicts
-/// Physics should only run on confirmed (interpolated) entities from the server
-pub(crate) fn disable_physics_on_replicated_entities(
+/// Disable physics on confirmed entities to prevent rollback conflicts
+/// Physics should only run on predicted entities, not on confirmed server entities
+pub(crate) fn disable_physics_on_confirmed_entities(
     mut commands: Commands,
-    predicted_entities: Query<
+    confirmed_entities: Query<
         Entity,
-        (
-            With<Replicated>,
-            With<RigidBody>,
-            Without<RigidBodyDisabled>,
-        ),
+        (With<Confirmed>, With<RigidBody>, Without<RigidBodyDisabled>),
     >,
 ) {
-    for entity in &predicted_entities {
+    for entity in &confirmed_entities {
         commands
             .entity(entity)
             .insert(RigidBodyDisabled)
