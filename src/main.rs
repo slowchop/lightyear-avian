@@ -65,7 +65,7 @@ fn main() -> AppExit {
     )>::default());
     // app.add_plugins(FilterQueryInspectorPlugin::<With<Ship>>::default());
 
-    app.add_plugins(PhysicsPlugins::new(FixedMain));
+    app.add_plugins(PhysicsPlugins::default());
     app.insert_resource(Gravity(Vec2::ZERO));
 
     match net_mode {

@@ -7,7 +7,7 @@ use lightyear::{
         *,
     },
     utils::{
-        avian2d::{angular_velocity, linear_velocity},
+        // avian2d::{angular_velocity, linear_velocity},
         bevy::TransformLinearInterpolation,
     },
 };
